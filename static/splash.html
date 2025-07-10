@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>UniAgenda - Cargando...</title>
+  <style>
+    /* Centrado fullscreen profesional */
+    body, html {
+      margin: 0; padding: 0;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2c3e50; /* azul oscuro profesional */
+      color: #ecf0f1; /* gris claro */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 3rem;
+      letter-spacing: 5px;
+      user-select: none;
+      animation: pulse 1.6s infinite alternate;
+      text-shadow: 0 0 10px #34495e88;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.6; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">UniAgenda</div>
+
+  <script>
+    setTimeout(() => {
+      window.location.href = "/static/login.html";
+    }, 2500);
+  </script>
+</body>
+</html>

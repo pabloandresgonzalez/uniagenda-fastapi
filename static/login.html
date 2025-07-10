@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - UniAgenda</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #ecf0f1; /* gris muy claro */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      padding: 36px 32px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 2.8rem;
+      color: #34495e; /* azul grisáceo */
+      margin-bottom: 20px;
+      user-select: none;
+      letter-spacing: 5px;
+      text-shadow: 0 0 6px #bdc3c7aa;
+    }
+
+    .logo-img {
+      width: 100px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 4px rgba(52, 73, 94, 0.3));
+      transition: filter 0.3s ease;
+    }
+    .logo-img:hover {
+      filter: drop-shadow(0 0 8px rgba(52, 73, 94, 0.5));
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.5px solid #bdc3c7;
+      border-radius: 10px;
+      background: #f9fbfc;
+      color: #2c3e50;
+      font-weight: 600;
+      transition: border-color 0.3s ease;
+    }
+
+    input::placeholder {
+      color: #95a5a6;
+      font-weight: 500;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #2980b9; /* azul brillante */
+      background: #eaf4fc;
+      box-shadow: 0 0 8px #2980b9aa;
+    }
+
+    button {
+      padding: 14px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: white;
+      background-color: #2980b9;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(41, 128, 185, 0.4);
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1c5980;
+      box-shadow: 0 8px 20px rgba(28, 89, 128, 0.6);
+    }
+
+    #resultado {
+      margin-top: 18px;
+      font-weight: 700;
+      min-height: 24px;
+      user-select: none;
+      font-size: 1rem;
+      color: #c0392b; /* rojo para errores */
+    }
+
+    @media (max-width: 420px) {
+      .login-container {
+        padding: 28px 20px;
+      }
+      .logo {
+        font-size: 2.4rem;
+        letter-spacing: 4px;
+      }
+      .logo-img {
+        width: 90px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <img src="/static/img/favicon.png" alt="UniAgenda" class="logo-img" />
+    <div class="logo">UniAgenda</div>
+    <form id="login-form">
+      <input type="email" id="correo" name="username" placeholder="Correo electrónico" required />
+      <input type="password" id="clave" name="password" placeholder="Contraseña" required />
+      <button type="submit">Ingresar</button>
+    </form>
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new URLSearchParams();
+      formData.append("username", document.getElementById("correo").value);
+      formData.append("password", document.getElementById("clave").value);
+
+      try {
+        const response = await fetch("/usuarios/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem("token", data.access_token);
+          document.getElementById("resultado").style.color = "#27ae60"; // verde suave para éxito
+          document.getElementById("resultado").innerText = "Login exitoso, redirigiendo...";
+          setTimeout(() => {
+            window.location.href = "/static/calendario.html";
+          }, 1500);
+        } else {
+          document.getElementById("resultado").style.color = "#c0392b"; // rojo error
+          document.getElementById("resultado").innerText = "Error: " + (data.detail || "Credenciales inválidas");
+        }
+      } catch (error) {
+        document.getElementById("resultado").style.color = "#c0392b";
+        document.getElementById("resultado").innerText = "Error en la conexión";
+      }
+    });
+  </script>
+</body>
+</html>
