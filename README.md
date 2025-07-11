@@ -2,6 +2,7 @@
 
 **UniAgenda** es una API RESTful desarrollada con **FastAPI** que permite a instituciones universitarias gestionar la reserva de espacios como aulas, auditorios, laboratorios y más. Incluye autenticación, notificaciones automáticas, historial y gestión de usuarios.
 
+
 ---
 
 ## 🚀 Tecnologías Usadas
