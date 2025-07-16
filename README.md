@@ -91,7 +91,7 @@ Se utiliza **FullCalendar.js** para mostrar visualmente los eventos reservados.
 
 ## 👨‍💻 Autor
 
-**Pablo Andrés González**  
+**Pablo Andrés González, Javier Moran, Christian Contreras, Cristian Steven**  
 📧 [pabloandres6@gmail.com] 
 
 🔗 [github.com/pabloandresgonzalez](https://github.com/pabloandresgonzalez)
