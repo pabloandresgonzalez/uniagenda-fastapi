@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Gestión de Usuarios</title>
+  <style>
+    /* Reset y base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('/static/img/auditorium.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header general fijo */
+    header {
+      background: #fff;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1001;
+      user-select: none;
+    }
+
+    /* Logo y texto */
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-wrap img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      user-select: none;
+    }
+    .logo-wrap img:hover {
+      transform: scale(1.1);
+    }
+    .logo-wrap h1 {
+      font-size: 1.5rem;
+      margin: 0;
+      color: #333;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    /* Botones del header */
+    .header-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .header-buttons button {
+      padding: 10px 18px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      color: white;
+    }
+    #add-btn {
+      background-color: #0d6efd;
+    }
+    #add-btn:hover {
+      background-color: #0b5ed7;
+      box-shadow: 0 4px 12px rgba(13,110,253,0.4);
+    }
+    #logout-btn {
+      background-color: #6c757d;
+    }
+    #logout-btn:hover {
+      background-color: #5a6268;
+      box-shadow: 0 4px 12px rgba(108,117,125,0.4);
+    }
+
+    /* Layout principal: sidebar + contenido */
+    .main-container {
+      display: flex;
+      flex: 1 1 auto;
+      height: calc(100vh - 72px); /* restar header */
+      overflow: hidden;
+      background: transparent;
+    }
+
+    /* Sidebar */
+    #sidebar-container {
+      width: 220px;
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+      user-select: none;
+    }
+    #sidebar-container nav h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+    }
+    #sidebar-container nav ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+    #sidebar-container nav ul li {
+      margin: 16px 0;
+    }
+    #sidebar-container nav ul li a {
+      color: #ecf0f1;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 12px;
+      display: block;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+    #sidebar-container nav ul li a:hover {
+      background-color: #34495e;
+    }
+
+    /* Contenido principal */
+    main.content {
+      flex-grow: 1;
+      padding: 24px 32px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.5); /* semitransparente */
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      margin: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+    }
+
+    thead tr {
+      background-color: #34495e;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    th, td {
+      padding: 14px 20px;
+      text-align: left;
+    }
+
+    tbody tr {
+      background-color: #fff;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
+    }
+
+    tbody tr:hover {
+      background-color: #f0f4f8;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
+    }
+
+    /* Botones de acción */
+    button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    button:hover {
+      box-shadow: 0 4px 15px rgb(0 0 0 / 0.3);
+    }
+
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px #2980b9aa;
+    }
+
+    /* Botón eliminar - rojo */
+    button.eliminar-btn {
+      background-color: #e74c3c;
+      color: white;
+      margin-left: 8px;
+    }
+
+    button.eliminar-btn:hover {
+      background-color: #c0392b;
+    }
+
+    /* Botón editar - azul */
+    button.editar-btn {
+      background-color: #2980b9;
+      color: white;
+    }
+
+    button.editar-btn:hover {
+      background-color: #1c5980;
+    }
+
+    /* Mensaje de resultado */
+    .mensaje {
+      margin-top: 16px;
+      font-weight: 700;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1100;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px 28px;
+      border-radius: 12px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .modal-header {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: #34495e;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      background: transparent;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #7f8c8d;
+      transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+      color: #34495e;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #34495e;
+    }
+
+    select, button.submit-btn {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1.8px solid #bdc3c7;
+      margin-top: 14px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    select:focus, button.submit-btn:focus {
+      outline: none;
+      border-color: #2980b9;
+      box-shadow: 0 0 8px #2980b9aa;
+    }
+
+    button.submit-btn {
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 24px;
+      box-shadow: 0 6px 15px rgba(41, 128, 185, 0.4);
+    }
+
+    button.submit-btn:hover {
+      background-color: #1c5980;
+      box-shadow: 0 8px 20px rgba(28, 89, 128, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tbody tr {
+        margin-bottom: 20px;
+        background: white;
+        box-shadow: 0 2px 6px rgb(0 0 0 / 0.12);
+        border-radius: 12px;
+        padding: 16px 16px 16px 16px;
+      }
+
+      tbody tr:hover {
+        background-color: #f0f4f8;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+      }
+
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+        font-size: 0.95rem;
+      }
+
+      td::before {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: 700;
+        color: #34495e;
+        content: attr(data-label);
+      }
+
+      td:last-child {
+        padding-left: 14px;
+      }
+
+      td:last-child::before {
+        content: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-wrap">
+      <img src="/static/img/favicon.png" alt="logo" />
+      <h1>UniAgenda | Gestión Usuarios</h1>
+    </div>
+    <div class="header-buttons">
+      <button id="add-btn">Nueva Reserva</button>
+      <button id="logout-btn">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div id="sidebar-container"></div>
+
+    <main class="content">
+      <table id="usuarios-table" aria-label="Tabla de usuarios">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="mensaje" id="mensaje"></div>
+
+      <!-- Modal editar rol -->
+      <div id="modalEditarRol" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+        <div class="modal-content">
+          <button class="modal-close" id="cerrarModal" aria-label="Cerrar">&times;</button>
+          <div class="modal-header" id="modalTitulo">Editar Rol de Usuario</div>
+          <div>
+            <label for="selectRol">Selecciona nuevo rol:</label>
+            <select id="selectRol" aria-describedby="selectRolHelp">
+              <option value="admin">admin</option>
+              <option value="docente">docente</option>
+              <option value="estudiante">estudiante</option>
+              <option value="invitado">invitado</option>
+              <option value="funcionario">funcionario</option>
+            </select>
+          </div>
+          <button class="submit-btn" id="guardarCambios">Guardar cambios</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Token y redirección si no está autenticado
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/static/login.html";
+    }
+
+    // Cargar sidebar según rol
+      async function cargarSidebar() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return window.location.href = "/static/login.html";
+    }
+
+    try {
+      // Llama a la API real para obtener info del usuario
+      const response = await fetch("/usuarios/me", {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      });
+
+      if (!response.ok) throw new Error("Usuario no autorizado");
+
+      const usuario = await response.json(); // contiene rol y nombre
+      const { rol, nombre } = usuario;
+
+      const sidebarHtml = `
+        <nav class="sidebar">
+          <h2>Hola, ${nombre}</h2>
+          <ul>
+            <li><a href="/static/calendario.html">Inicio</a></li>
+
+            ${rol === 'admin' ? `
+              <li><a href="/static/admin.html">Gestión de Usuarios</a></li>
+              <li><a href="/static/cambiar-rol.html">Cambiar Rol</a></li>
+              <li><a href="/static/espacios.html">Espacios</a></li>
+              <li><a href="/static/eventos.html">Eventos</a></li>
+              <li><a href="/static/mi_reserva.html">Reservas</a></li>
+              <li><a href="/static/notificaciones.html">Notificaciones</a></li>
+            ` : ''}
+
+            ${rol === 'docente' ? `
+              <li><a href="/static/registro.html">Registro</a></li>
+              <li><a href="/static/eventos.html">Mis Eventos</a></li>
+            ` : ''}
+
+            ${(rol === 'estudiante' || rol === 'invitado' || rol === 'funcionario') ? `
+              <li><a href="/static/calendario.html">Ver Calendario</a></li>
+            ` : ''}
+
+            <li><a href="/static/cambio_contrasena.html">Cambio de Contraseña</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
+          </ul>
+        </nav>
+      `;
+
+      document.getElementById('sidebar-container').innerHTML = sidebarHtml;
+
+    } catch (error) {
+      alert('Error cargando menú: ' + error.message);
+      window.location.href = "/static/login.html";
+    }
+  }
+
+  function cerrarSesion() {
+    localStorage.removeItem("token");
+    window.location.href = "/static/login.html";
+  }
+
+  cargarSidebar(); // Llamar siempre al cargar la página
+
+    // Logout y botón añadir (puedes ajustar rutas)
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "/static/login.html";
+    });
+    document.getElementById("add-btn").addEventListener("click", () => {
+      window.location.href = "/static/registro.html";
+    });
+
+    // Manejo tabla y modal
+
+    const tablaBody = document.querySelector("#usuarios-table tbody");
+    const mensaje = document.getElementById("mensaje");
+    let usuarioSeleccionadoId = null;
+
+    async function cargarUsuarios() {
+      try {
+        const response = await fetch("/usuarios", {
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("No autorizado");
+        }
+
+        const usuarios = await response.json();
+        tablaBody.innerHTML = "";
+
+        usuarios.forEach(usuario => {
+          const fila = document.createElement("tr");
+          fila.innerHTML = `
+            <td data-label="ID">${usuario.id}</td>
+            <td data-label="Nombre">${usuario.nombre}</td>
+            <td data-label="Correo">${usuario.correo}</td>
+            <td data-label="Rol">${usuario.rol}</td>
+            <td data-label="Acción">
+              <button class="editar-btn" onclick="abrirModal(${usuario.id}, '${usuario.rol}')">Editar rol</button>
+              <button class="eliminar-btn" onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+            </td>
+          `;
+          tablaBody.appendChild(fila);
+        });
+
+      } catch (err) {
+        mensaje.style.color = "red";
+        mensaje.textContent = "Error al cargar usuarios: " + err.message;
+      }
+    }
+
+    async function eliminarUsuario(id) {
+      if (!confirm("¿Estás seguro de eliminar este usuario?")) return;
+
+      try {
+        const response = await fetch(`/usuarios/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          mensaje.style.color = "green";
+          mensaje.textContent = data.mensaje;
+          cargarUsuarios();
+        } else {
+          mensaje.style.color = "red";
+          mensaje.textContent = "Error: " + (data.detail || "No se pudo eliminar");
+        }
+      } catch (err) {
+        mensaje.style.color = "red";
+        mensaje.textContent = "Error de red: " + err.message;
+      }
+    }
+
+    // Modal
+    const modal = document.getElementById("modalEditarRol");
+    const selectRol = document.getElementById("selectRol");
+    const btnCerrarModal = document.getElementById("cerrarModal");
+    const btnGuardarCambios = document.getElementById("guardarCambios");
+
+    function abrirModal(id, rolActual) {
+      usuarioSeleccionadoId = id;
+      selectRol.value = rolActual;
+      modal.style.display = "flex";
+      mensaje.textContent = "";
+    }
+
+    btnCerrarModal.onclick = () => {
+      modal.style.display = "none";
+    };
+
+    window.onclick = (event) => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    };
+
+    btnGuardarCambios.onclick = async () => {
+      if (!usuarioSeleccionadoId) return;
+
+      const nuevoRol = selectRol.value;
+
+      try {
+        const response = await fetch(`/usuarios/cambiar-rol/${usuarioSeleccionadoId}?nuevo_rol=${encodeURIComponent(nuevoRol)}`, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          mensaje.style.color = "green";
+          mensaje.textContent = data.mensaje;
+          modal.style.display = "none";
+          cargarUsuarios();
+        } else {
+          mensaje.style.color = "red";
+          mensaje.textContent = data.detail || "Error al cambiar rol";
+        }
+      } catch (error) {
+        mensaje.style.color = "red";
+        mensaje.textContent = "Error en la conexión";
+      }
+    };
+
+    cargarUsuarios();
+  </script>
+</body>
+</html>

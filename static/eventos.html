@@ -396,7 +396,7 @@
               <li><a href="/static/calendario.html">Ver Calendario</a></li>
             ` : ''}
 
-            <li><a href="/static/cambiar-clave.html">Cambio de Contraseña</a></li>
+            <li><a href="#">Cambio de Contraseña</a></li>
             <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
           </ul>
         </nav>
@@ -526,7 +526,7 @@
     }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "dayGridMonth",
+      initialView: "timeGridWeek",
       locale: 'es',
       headerToolbar: {
         left: "prev,next today",

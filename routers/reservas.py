@@ -2,12 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import models, schemas, auth
 from database import get_db
+from sqlalchemy.orm import joinedload
 
 router = APIRouter()
 
 @router.get("/", response_model=list[schemas.ReservaOut])
 def listar_reservas(current_user=Depends(auth.get_current_user), db: Session = Depends(get_db)):
-    return db.query(models.Reserva).all()
+    reservas = db.query(models.Reserva).options(
+        joinedload(models.Reserva.usuario),
+        joinedload(models.Reserva.espacio),
+        joinedload(models.Reserva.evento)
+    ).all()
+    return reservas
 
 @router.post("/", response_model=schemas.ReservaOut)
 def crear_reserva(reserva: schemas.ReservaBase, current_user=Depends(auth.get_current_user), db: Session = Depends(get_db)):

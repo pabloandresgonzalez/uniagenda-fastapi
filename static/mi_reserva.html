@@ -389,14 +389,15 @@
             ` : ''}
 
             ${rol === 'docente' ? `
-              <li><a href="/static/eventos.html">Eventos</a></li>
+              <li><a href="/static/registro.html">Registro</a></li>
+              <li><a href="/static/eventos.html">Mis Eventos</a></li>
             ` : ''}
 
             ${(rol === 'estudiante' || rol === 'invitado' || rol === 'funcionario') ? `
               <li><a href="/static/calendario.html">Ver Calendario</a></li>
             ` : ''}
 
-            <li><a href="/static/cambiar-clave.html">Cambio de Contraseña</a></li>
+            <li><a href="/static/cambio_contrasena.html">Cambio de Contraseña</a></li>
             <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
           </ul>
         </nav>
@@ -526,7 +527,7 @@
     }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: "dayGridMonth",
+      initialView: "listWeek",
       locale: 'es',
       headerToolbar: {
         left: "prev,next today",

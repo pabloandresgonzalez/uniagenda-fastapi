@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registro - UniAgenda</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('/static/img/university.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .registro-container {
+      background: rgba(255, 255, 255, 0.92); /* blanco con transparencia */
+      padding: 36px 32px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      backdrop-filter: blur(6px); /* desenfoque de fondo */
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 2.4rem;
+      color: #34495e;
+      margin-bottom: 20px;
+      user-select: none;
+      letter-spacing: 4px;
+      text-shadow: 0 0 6px #bdc3c7aa;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    input {
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.5px solid #bdc3c7;
+      border-radius: 10px;
+      background: #f9fbfc;
+      color: #2c3e50;
+      font-weight: 600;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2980b9;
+      background: #eaf4fc;
+      box-shadow: 0 0 8px #2980b9aa;
+    }
+
+    button {
+      padding: 14px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: white;
+      background-color: #27ae60;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4);
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1e8449;
+    }
+
+    #mensaje {
+      margin-top: 18px;
+      font-weight: 600;
+      min-height: 24px;
+      user-select: none;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 420px) {
+      .registro-container {
+        padding: 28px 20px;
+      }
+
+      .logo {
+        font-size: 2rem;
+        letter-spacing: 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="registro-container">
+    <div class="logo">UniAgenda</div>
+    <form id="registro-form">
+      <input type="text" id="nombre" placeholder="Nombre completo" required />
+      <input type="email" id="correo" placeholder="Correo electrónico" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button type="submit">Registrarse</button>
+    </form>
+    <div id="mensaje"></div>
+    <div style="margin-top: 12px;">
+  ¿Ya tienes cuenta? <a href="/static/login.html" style="color: #2980b9; font-weight: 600;">Inicia sesión</a>
+</div>
+
+  </div>
+
+  <script>
+    document.getElementById("registro-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const correo = document.getElementById("correo").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch("/usuarios/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nombre, correo, password })
+        });
+
+        const data = await response.json();
+        const mensaje = document.getElementById("mensaje");
+
+        if (response.ok) {
+          mensaje.style.color = "#27ae60";
+          mensaje.textContent = "Registro exitoso, redirigiendo...";
+
+          const loginData = new URLSearchParams();
+          loginData.append("username", correo);
+          loginData.append("password", password);
+
+          const loginResponse = await fetch("/usuarios/token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: loginData
+          });
+
+          const loginResult = await loginResponse.json();
+
+          if (loginResponse.ok) {
+            localStorage.setItem("token", loginResult.access_token);
+            setTimeout(() => {
+              window.location.href = "/static/calendario.html";
+            }, 1500);
+          } else {
+            mensaje.style.color = "#c0392b";
+            mensaje.textContent = "Registro bien, pero no se pudo iniciar sesión.";
+          }
+        } else {
+          mensaje.style.color = "#c0392b";
+          mensaje.textContent = "Error: " + (data.detail || "No se pudo registrar");
+        }
+      } catch (error) {
+        document.getElementById("mensaje").style.color = "#c0392b";
+        document.getElementById("mensaje").textContent = "Error en la conexión";
+      }
+    });
+  </script>
+</body>
+</html>

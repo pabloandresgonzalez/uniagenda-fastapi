@@ -58,3 +58,51 @@ class ReservaOut(ReservaBase):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class UsuarioOut(BaseModel):
+    id: int
+    nombre: str
+    correo: EmailStr
+    rol: Optional[str] = "docente"
+
+    class Config:
+        orm_mode = True
+
+class EspacioOut(BaseModel):
+    id: int
+    nombre: str
+    tipo: str
+    capacidad: int
+    ubicacion: str
+
+    class Config:
+        orm_mode = True
+
+class EventoOut(BaseModel):
+    id: int
+    titulo: str
+    descripcion: Optional[str]
+    fecha_inicio: datetime
+    fecha_fin: datetime
+
+    class Config:
+        orm_mode = True
+
+class ReservaBase(BaseModel):
+    usuario_id: int
+    espacio_id: int
+    evento_id: int
+    fecha_reserva: datetime
+    observaciones: Optional[str]
+
+class ReservaOut(BaseModel):
+    id: int
+    usuario: Optional[UsuarioOut]  # Objeto anidado
+    espacio: Optional[EspacioOut]
+    evento: Optional[EventoOut]
+    fecha_reserva: datetime
+    observaciones: Optional[str]
+    estado: str
+
+    class Config:
+        orm_mode = True

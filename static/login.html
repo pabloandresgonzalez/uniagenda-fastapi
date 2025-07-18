@@ -10,7 +10,8 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #ecf0f1; /* gris muy claro */
+      background: url('/static/img/university.jpg') no-repeat center center fixed;
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -20,19 +21,20 @@
     }
 
     .login-container {
-      background: white;
+      background: rgba(255, 255, 255, 0.92); /* semi-transparente para que se vea el fondo */
       padding: 36px 32px;
       border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
       width: 100%;
       max-width: 360px;
       text-align: center;
+      backdrop-filter: blur(6px);
     }
 
     .logo {
       font-weight: 700;
       font-size: 2.8rem;
-      color: #34495e; /* azul grisáceo */
+      color: #34495e;
       margin-bottom: 20px;
       user-select: none;
       letter-spacing: 5px;
@@ -75,7 +77,7 @@
     input[type="email"]:focus,
     input[type="password"]:focus {
       outline: none;
-      border-color: #2980b9; /* azul brillante */
+      border-color: #2980b9;
       background: #eaf4fc;
       box-shadow: 0 0 8px #2980b9aa;
     }
@@ -104,7 +106,7 @@
       min-height: 24px;
       user-select: none;
       font-size: 1rem;
-      color: #c0392b; /* rojo para errores */
+      color: #c0392b;
     }
 
     @media (max-width: 420px) {
@@ -131,6 +133,9 @@
       <button type="submit">Ingresar</button>
     </form>
     <div id="resultado"></div>
+    <div style="margin-top: 12px;">
+  ¿No tienes cuenta? <a href="/static/registro.html" style="color: #2980b9; font-weight: 600;">Regístrate aquí</a>
+</div>
   </div>
 
   <script>
@@ -154,13 +159,13 @@
 
         if (response.ok) {
           localStorage.setItem("token", data.access_token);
-          document.getElementById("resultado").style.color = "#27ae60"; // verde suave para éxito
+          document.getElementById("resultado").style.color = "#27ae60";
           document.getElementById("resultado").innerText = "Login exitoso, redirigiendo...";
           setTimeout(() => {
             window.location.href = "/static/calendario.html";
           }, 1500);
         } else {
-          document.getElementById("resultado").style.color = "#c0392b"; // rojo error
+          document.getElementById("resultado").style.color = "#c0392b";
           document.getElementById("resultado").innerText = "Error: " + (data.detail || "Credenciales inválidas");
         }
       } catch (error) {

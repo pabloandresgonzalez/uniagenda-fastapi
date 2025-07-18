@@ -19,3 +19,25 @@ def crear_espacio(espacio: schemas.EspacioBase, current_user=Depends(auth.get_cu
     db.refresh(nuevo)
     return nuevo
 
+@router.put("/{id}", response_model=schemas.EspacioOut)
+def actualizar_espacio(
+    id: int,
+    espacio_actualizado: schemas.EspacioBase,
+    current_user=Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.rol != "admin":
+        raise HTTPException(status_code=403, detail="Solo admins pueden actualizar espacios")
+
+    espacio = db.query(models.Espacio).filter(models.Espacio.id == id).first()
+    if not espacio:
+        raise HTTPException(status_code=404, detail="Espacio no encontrado")
+
+    for key, value in espacio_actualizado.dict().items():
+        setattr(espacio, key, value)
+
+    db.commit()
+    db.refresh(espacio)
+    return espacio
+
+
